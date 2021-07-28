@@ -30,7 +30,7 @@ public final class Constants {
     public static final int JOYSTICK_PORT = 4;
 
     public static final int LEFT_X_AXIS = 1;
-    public static final int RIGHT_X_AXIS = 4;
+    public static final int LEFT_Y_AXIS = 2;
 
     public static final double SPEED_MULT = 0.25;
     public static final double TURN_MULT = 0.25;
@@ -158,15 +158,16 @@ public final class Constants {
      * 
      * 5, 6: lb and rb 7, 8: middle two buttons
      */
-    public static final int INTAKE_BUTTON = 1;
-    public static final int FUNNEL_BUTTON = 2;
-    public static final int TOWER_BUTTON = 3;
-    public static final int FLYWHEEL_BUTTON = 4;
+    public static final int INTAKE_BUTTON = 1; // A
+    public static final int FUNNEL_BUTTON = 2; // B
+    public static final int TOWER_BUTTON = 3; // X
+    public static final int SHOOT_CELL_BUTTON = 4; // Y
+    public static final int FLYWHEEL_BUTTON = 5; // LB
     // public static final int HOOD_IN_BUTTON = 5;
+    // RB is broken (with current joystick - may change)
     // public static final int HOOD_OUT_BUTTON = 7;
-    public static final int SHOOT_CELL_BUTTON = 5;
-    public static final int STOP_HOPP_AND_ROLL_BUTTON = 7; // turns off flywheel and hopper in ShootCell
-    public static final int START_SHOOT_BUTTON = 8;
-    public static final int TEST_FLYWHEEL_DOWN = 9;
-    public static final int TEST_FLYWHEEL_UP = 10;
+    public static final int STOP_HOPP_AND_ROLL_BUTTON = 7; // (Start Button) turns off flywheel and hopper in ShootCell
+    public static final int START_SHOOT_BUTTON = 8; // Back
+    public static final int TEST_FLYWHEEL_DOWN = 9; // LSB Push
+    public static final int TEST_FLYWHEEL_UP = 10; // RSB Push
 }

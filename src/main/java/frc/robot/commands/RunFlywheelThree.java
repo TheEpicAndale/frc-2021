@@ -22,14 +22,14 @@ public class RunFlywheelThree extends CommandBase {
     private boolean quitRamp = false;
 
     private Button maxRPMSetting;
-    private Button higherRPMSetting;
+    private Button minRPMSetting;
     private Button stopButton;
 
     public RunFlywheelThree() {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(Shooter.flywheel);
         maxRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_UP);
-        higherRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_DOWN);
+        minRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_DOWN);
         stopButton = new JoystickButton(Robot.joystick, Constants.FUNNEL_BUTTON);
 
     }
@@ -58,7 +58,7 @@ public class RunFlywheelThree extends CommandBase {
         // ShootCell
         if (maxRPMSetting.get()) {
             desiredRPM = 4850;
-        } else if (higherRPMSetting.get()) {
+        } else if (minRPMSetting.get()) {
             desiredRPM = 4250;
         }
 

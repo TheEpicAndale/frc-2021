@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Controller;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -11,6 +12,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.shooter.Shooter;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 
 public class RunFlywheel extends CommandBase {
     public static double endVoltage;
@@ -22,14 +24,18 @@ public class RunFlywheel extends CommandBase {
     private boolean quitRamp = false;
 
     private Button maxRPMSetting;
-    private Button higherRPMSetting;
+    private Button minRPMSetting;
     private Button stopButton;
+    private POVButton dPadUpButton;
+    private POVButton dPadDownButton;
 
     public RunFlywheel() {
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(Shooter.flywheel);
-        maxRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_UP);
-        higherRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_DOWN);
+        dPadUpButton = new POVButton(Robot.joystick, 0);
+        dPadDownButton = new POVButton(Robot.joystick, 180);
+        // maxRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_UP);
+        // minRPMSetting = new JoystickButton(Robot.joystick, Constants.TEST_FLYWHEEL_DOWN);
         stopButton = new JoystickButton(Robot.joystick, Constants.FUNNEL_BUTTON);
 
     }
@@ -56,9 +62,9 @@ public class RunFlywheel extends CommandBase {
         // If statement to increment RPM for testing without restarting robot - ONLY FOR
         // TESTING - Needs to be able to be run in between shooting balls? -> Repeat
         // ShootCell
-        if (maxRPMSetting.get()) {
+        if (dPadUpButton.get()) {
             desiredRPM = 4850;
-        } else if (higherRPMSetting.get()) {
+        } else if (dPadDownButton.get()) {
             desiredRPM = 4250;
         }
 
@@ -90,4 +96,5 @@ public class RunFlywheel extends CommandBase {
     public boolean isFinished() {
         return Shooter.flywheel.getRPM() >= desiredRPM || stopButton.get() || quitRamp;
     }
+
 }
