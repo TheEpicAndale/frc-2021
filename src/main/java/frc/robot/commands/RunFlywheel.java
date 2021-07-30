@@ -33,6 +33,17 @@ public class RunFlywheel extends CommandBase {
     private Button stopButton;
     private POVButton dPadUpButton;
     private POVButton dPadDownButton;
+    private double RPMError = 0;
+    private double previousTime = 0;
+    private double deltaTime = 0;
+    private double errorSum = 0;
+    private double integralRadius = 100;
+    private double previousError = 0;
+    private double errorRate = 0;
+    private final double kP = 0.0002;
+    private final double kI = 0.0002;
+    private final double kD = 0.001;
+
 
     public RunFlywheel() {
         // Use addRequirements() here to declare subsystem dependencies.
@@ -67,6 +78,15 @@ public class RunFlywheel extends CommandBase {
         // If statement to increment RPM for testing without restarting robot - ONLY FOR
         // TESTING - Needs to be able to be run in between shooting balls? -> Repeat
         // ShootCell
+        RPMError = desiredRPM - Shooter.flywheel.getRPM();
+        deltaTime = Timer.getFPGATimestamp() - previousTime;
+        if(Math.abs(RPMError) < integralRadius) {
+            errorSum = RPMError * deltaTime;
+        }
+        errorRate = ((RPMError - previousError) / deltaTime);
+        
+        voltage = kP * RPMError + kI * errorSum + kD * errorRate;
+        
         if (dPadUpButton.get()) {
             desiredRPM = 4850;
         } else if (dPadDownButton.get()) {
@@ -87,53 +107,56 @@ public class RunFlywheel extends CommandBase {
         //     rampDampener = 0;
         // }
 
-        if (hasSwitched == false) {
-            if (Shooter.flywheel.getRPM() < desiredRPM) {
-                if (Shooter.flywheel.shootIteration >= 1) {
-                    voltage = 0.1 + voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
-                    // } else if (Shooter.flywheel.shootIteration > 1) {
-                    // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
-                } else {
-                    System.out.println("Shoot Iteration is wrong!");
-                    quitRamp = true;
-                }
-            } else if (Shooter.flywheel.getRPM() > desiredRPM) {
-                if (Shooter.flywheel.shootIteration >= 1) {
-                    voltage = 0.1 - voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
-                    // } else if (Shooter.flywheel.shootIteration > 1) {
-                    // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
-                } else {
-                    System.out.println("Shoot Iteration is wrong!");
-                    quitRamp = true;
-                }
-            } else {
-                System.out.println("This message should not print");
-                voltage = 0;
-            }
-        } else {
-            if (Shooter.flywheel.getRPM() < desiredRPM) {
-                if (Shooter.flywheel.shootIteration >= 1) {
-                    voltage = switchVoltage + voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
-                    // } else if (Shooter.flywheel.shootIteration > 1) {
-                    // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
-                } else {
-                    System.out.println("Shoot Iteration is wrong!");
-                    quitRamp = true;
-                }
-            } else if (Shooter.flywheel.getRPM() > desiredRPM) {
-                if (Shooter.flywheel.shootIteration >= 1) {
-                    voltage = switchVoltage - voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
-                    // } else if (Shooter.flywheel.shootIteration > 1) {
-                    // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
-                } else {
-                    System.out.println("Shoot Iteration is wrong!");
-                    quitRamp = true;
-                }
-            } else {
-                System.out.println("This message should not print");
-                voltage = 0;
-            }
-        }
+        // if (hasSwitched == false) {
+        //     if (Shooter.flywheel.getRPM() < desiredRPM) {
+        //         if (Shooter.flywheel.shootIteration >= 1) {
+        //             voltage = 0.1 + voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
+        //             // } else if (Shooter.flywheel.shootIteration > 1) {
+        //             // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
+        //         } else {
+        //             System.out.println("Shoot Iteration is wrong!");
+        //             quitRamp = true;
+        //         }
+        //     } else if (Shooter.flywheel.getRPM() > desiredRPM) {
+        //         if (Shooter.flywheel.shootIteration >= 1) {
+        //             voltage = 0.1 - voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
+        //             // } else if (Shooter.flywheel.shootIteration > 1) {
+        //             // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
+        //         } else {
+        //             System.out.println("Shoot Iteration is wrong!");
+        //             quitRamp = true;
+        //         }
+        //     } else {
+        //         System.out.println("This message should not print");
+        //         voltage = 0;
+        //     }
+        // } else {
+        //     if (Shooter.flywheel.getRPM() < desiredRPM) {
+        //         if (Shooter.flywheel.shootIteration >= 1) {
+        //             voltage = switchVoltage + voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
+        //             // } else if (Shooter.flywheel.shootIteration > 1) {
+        //             // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
+        //         } else {
+        //             System.out.println("Shoot Iteration is wrong!");
+        //             quitRamp = true;
+        //         }
+        //     } else if (Shooter.flywheel.getRPM() > desiredRPM) {
+        //         if (Shooter.flywheel.shootIteration >= 1) {
+        //             voltage = switchVoltage - voltageIncrement * (Timer.getFPGATimestamp() - initTime) - rampDampener;
+        //             // } else if (Shooter.flywheel.shootIteration > 1) {
+        //             // voltage = 0.1 + 0.02 * (Timer.getFPGATimestamp() - initTime);
+        //         } else {
+        //             System.out.println("Shoot Iteration is wrong!");
+        //             quitRamp = true;
+        //         }
+        //     } else {
+        //         System.out.println("This message should not print");
+        //         voltage = 0;
+        //     }
+        // }
+        
+        previousTime = Timer.getFPGATimestamp();
+        previousError = RPMError;
 
         endVoltage = voltage;
         Shooter.flywheel.setVolt(voltage);
